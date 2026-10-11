@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BâtiPro — Construction & Rénovation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ==================== CUSTOM PROPERTIES ==================== */
+    :root {
+      --bg: #F5F2ED;
+      --dark: #1C1C1C;
+      --primary: #2C3E50;
+      --accent: #D4793A;
+      --text: #2C2C2C;
+      --card: #FFFFFF;
+      --radius-card: 12px;
+      --radius-btn: 8px;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      --shadow-hover: 0 12px 32px rgba(0, 0, 0, 0.12);
+      --transition: 0.3s ease;
+      --nav-height: 72px;
+    }
+
+    /* ==================== RESET ==================== */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: var(--nav-height);
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 600;
+      line-height: 1.2;
+      color: var(--primary);
+    }
+
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+    ul { list-style: none; }
+
+    /* ==================== FOCUS VISIBLE ==================== */
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    /* ==================== BARRE DE PROGRESSION ==================== */
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--accent);
+      transform-origin: left;
+      transform: scaleX(0);
+      z-index: 2000;
+      transition: transform 0.1s linear;
+    }
+
+    /* ==================== NAVBAR ==================== */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      height: var(--nav-height);
+      display: flex;
+      align-items: center;
+      background: transparent;
+      transition: background var(--transition), backdrop-filter var(--transition), box-shadow var(--transition);
+    }
+
+    .navbar.is-stuck {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    .navbar .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -0.02em;
+    }
+
+    .logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: 1.75rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      align-items: center;
+    }
+
+    .nav-links a {
+      position: relative;
+      padding: 4px 0;
+      transition: color var(--transition);
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: width var(--transition);
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* Burger mobile */
+    .burger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .burger span {
+      display: block;
+      width: 26px;
+      height: 2px;
+      background: var(--primary);
+      transition: transform var(--transition), opacity var(--transition);
+    }
+
+    .burger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .burger.active span:nth-child(2) { opacity: 0; }
+    .burger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* ==================== CONTAINER ==================== */
+    .container {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ==================== HERO ==================== */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+      margin-top: calc(-1 * var(--nav-height));
+      padding-top: var(--nav-height);
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.55) 0%,
+        rgba(0, 0, 0, 0.45) 50%,
+        rgba(0, 0, 0, 0.65) 100%
+      );
+      z-index: 1;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 820px;
+      padding: 2rem 24px;
+      opacity: 0;
+      transform: translateY(40px);
+      animation: heroLoad 0.8s ease-out 0.2s forwards;
+    }
+
+    @keyframes heroLoad {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero p {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ==================== CTA SHINE ==================== */
+    .btn {
+      position: relative;
+      display: inline-block;
+      padding: 16px 40px;
+      border-radius: var(--radius-btn);
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      border: none;
+      overflow: hidden;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(212, 121, 58, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: #c06a2e;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(212, 121, 58, 0.45);
+    }
+
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.6s ease;
+    }
+
+    .btn-primary:hover::after { left: 150%; }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      color: #fff;
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    /* ==================== SECTION GÉNÉRIQUE ==================== */
+    .section { padding: 6rem 0; }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4.5vw, 3rem);
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-sub {
+      font-size: clamp(0.95rem, 2vw, 1.1rem);
+      color: #5a5a5a;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* ==================== SCROLL REVEAL ==================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==================== À PROPOS ==================== */
+    .about {
+      background: var(--card);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .about-img {
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      aspect-ratio: 4 / 3;
+    }
+
+    .about-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .about-content h2 {
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      margin-bottom: 1.25rem;
+    }
+
+    .about-content > p {
+      color: #5a5a5a;
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+    }
+
+    .about-list {
+      margin-bottom: 2rem;
+    }
+
+    .about-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.9rem;
+      font-size: 0.95rem;
+    }
+
+    .about-list li::before {
+      content: '✓';
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      background: rgba(212, 121, 58, 0.15);
+      color: var(--accent);
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ==================== SERVICES ==================== */
+    .services-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .service-card {
+      background: var(--card);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+
+    .service-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .service-img {
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      background: #e0ddd8;
+    }
+
+    .service-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .service-card:hover .service-img img {
+      transform: scale(1.05);
+    }
+
+    .service-body { padding: 1.75rem; }
+
+    .service-body h3 {
+      font-size: 1.35rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .service-body p {
+      font-size: 0.95rem;
+      color: #5a5a5a;
+      line-height: 1.6;
+    }
+
+    /* ==================== PROCESSUS ==================== */
+    .process {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .process .section-title { color: #fff; }
+    .process .section-sub { color: rgba(255, 255, 255, 0.7); }
+
+    .process-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      counter-reset: step;
+    }
+
+    .process-step {
+      position: relative;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: transform var(--transition), background var(--transition);
+    }
+
+    .process-step:hover {
+      transform: translateY(-6px);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .process-step::before {
+      counter-increment: step;
+      content: '0' counter(step);
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+
+    .process-step h3 {
+      color: #fff;
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .process-step p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.95rem;
+    }
+
+    /* ==================== RÉALISATIONS CARROUSEL ==================== */
+    .realisations {
+      background: var(--dark);
+      padding: 6rem 0;
+      overflow: hidden;
+    }
+
+    .realisations .section-title { color: #fff; }
+    .realisations .section-sub { color: rgba(255, 255, 255, 0.65); }
+
+    .carousel-wrapper {
+      position: relative;
+      margin-top: 2rem;
+    }
+
+    .carousel-viewport {
+      overflow: hidden;
+      border-radius: var(--radius-card);
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform;
+    }
+
+    .carousel-slide {
+      flex: 0 0 100%;
+      position: relative;
+      aspect-ratio: 16 / 10;
+      background: #2a2a2a;
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .carousel-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.85) 0%,
+        rgba(0, 0, 0, 0.2) 50%,
+        transparent 75%
+      );
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 2rem 2.5rem;
+      color: #fff;
+    }
+
+    .carousel-overlay h3 {
+      color: #fff;
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      margin-bottom: 0.35rem;
+    }
+
+    .carousel-overlay p {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .carousel-overlay .tag {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 50px;
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* Contrôles */
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .carousel-btn {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--transition), transform var(--transition);
+    }
+
+    .carousel-btn:hover {
+      background: var(--accent);
+      transform: scale(1.08);
+    }
+
+    .carousel-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .carousel-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.25);
+      border: none;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+      padding: 0;
+    }
+
+    .carousel-dot.active {
+      background: var(--accent);
+      transform: scale(1.3);
+    }
+
+    /* ==================== TÉMOIGNAGES ==================== */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .testimonial-card {
+      background: var(--card);
+      padding: 2.25rem;
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow);
+      transition: transform var(--transition), box-shadow var(--transition);
+      position: relative;
+    }
+
+    .testimonial-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .testimonial-card::before {
+      content: '"';
+      position: absolute;
+      top: 1rem;
+      right: 1.75rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 4rem;
+      color: rgba(212, 121, 58, 0.15);
+      line-height: 1;
+    }
+
+    .testimonial-stars {
+      color: var(--accent);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      letter-spacing: 2px;
+    }
+
+    .testimonial-text {
+      font-size: 0.98rem;
+      color: #4a4a4a;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      font-style: italic;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .testimonial-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .testimonial-author strong {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--primary);
+    }
+
+    .testimonial-author span {
+      font-size: 0.82rem;
+      color: #888;
+    }
+
+    /* ==================== FAQ ==================== */
+    .faq { background: var(--card); }
+
+    .faq-list {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid #e8e4de;
+      padding: 0;
+    }
+
+    .faq-item:first-child {
+      border-top: 1px solid #e8e4de;
+    }
+
+    .faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      text-align: left;
+      padding: 1.5rem 0;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--primary);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      transition: color var(--transition);
+    }
+
+    .faq-question:hover { color: var(--accent); }
+
+    .faq-question .faq-icon {
+      font-size: 1.5rem;
+      color: var(--accent);
+      transition: transform var(--transition);
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .faq-item.open .faq-question .faq-icon {
+      transform: rotate(45deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+      padding: 0;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 300px;
+      padding-bottom: 1.5rem;
+    }
+
+    .faq-answer p {
+      font-size: 0.95rem;
+      color: #5a5a5a;
+      line-height: 1.7;
+    }
+
+    /* ==================== CHIFFRES CLÉS ==================== */
+    .stats {
+      background: var(--accent);
+      padding: 4rem 0;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      text-align: center;
+    }
+
+    .stat-item h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-item p {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ==================== CONTACT ==================== */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+
+    .contact-form {
+      background: var(--card);
+      padding: 2.5rem;
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow);
+    }
+
+    .contact-form h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group { margin-bottom: 1.25rem; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: var(--primary);
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid #e0ddd8;
+      border-radius: var(--radius-btn);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      background: var(--bg);
+      color: var(--text);
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(212, 121, 58, 0.15);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-btn);
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+    }
+
+    .btn-submit:hover {
+      background: #c06a2e;
+      transform: translateY(-2px);
+    }
+
+    .contact-info h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .contact-detail {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .contact-detail .icon {
+      width: 42px;
+      height: 42px;
+      background: var(--card);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+    }
+
+    .contact-detail .label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #888;
+    }
+
+    .contact-detail .value {
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    /* ==================== FOOTER ==================== */
+    .footer {
+      background: var(--dark);
+      color: rgba(255, 255, 255, 0.7);
+      padding: 3rem 0 2rem;
+      text-align: center;
+    }
+
+    .footer .logo { color: #fff; margin-bottom: 0.75rem; }
+
+    .footer-tagline {
+      font-size: 0.95rem;
+      opacity: 0.6;
+      margin-bottom: 1.75rem;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .footer-links a {
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color var(--transition);
+    }
+
+    .footer-links a:hover { color: var(--accent); }
+
+    .footer-copy { font-size: 0.8rem; opacity: 0.4; }
+
+    /* ==================== MEDIA QUERIES ==================== */
+    @media (min-width: 768px) {
+      .container { padding: 0 40px; }
+
+      .services-grid { grid-template-columns: repeat(3, 1fr); }
+
+      .about-grid { grid-template-columns: 1fr 1fr; }
+
+      .process-grid { grid-template-columns: repeat(2, 1fr); }
+
+      .testimonials-grid { grid-template-columns: repeat(3, 1fr); }
+
+      .contact-grid { grid-template-columns: 1.2fr 1fr; align-items: start; }
+
+      .stats-grid { grid-template-columns: repeat(4, 1fr); }
+
+      .carousel-slide { aspect-ratio: 21 / 9; }
+    }
+
+    @media (min-width: 1024px) {
+      .container { padding: 0 48px; }
+
+      .service-body { padding: 2rem; }
+
+      .process-grid { grid-template-columns: repeat(4, 1fr); }
+
+      .carousel-slide { aspect-ratio: 21 / 8; }
+    }
+
+    /* ==================== MOBILE NAV ==================== */
+    @media (max-width: 767px) {
+      .burger { display: flex; }
+
+      .nav-links {
+        position: fixed;
+        top: var(--nav-height);
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        flex-direction: column;
+        gap: 0;
+        padding: 1.5rem 24px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        transform: translateY(-120%);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 0.35s ease, opacity 0.35s ease;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .nav-links.open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .nav-links li { width: 100%; }
+
+      .nav-links a {
+        display: block;
+        padding: 0.9rem 0;
+        border-bottom: 1px solid #f0ede8;
+        font-size: 1rem;
+      }
+
+      .nav-links li:last-child a { border-bottom: none; }
+
+      .nav-links a::after { display: none; }
+    }
+
+    /* ==================== REDUCED MOTION ==================== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+
+      .hero-content { opacity: 1; transform: none; }
+      .reveal { opacity: 1; transform: none; }
+      .progress-bar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barre de progression -->
+  <div class="progress-bar" id="progressBar" aria-hidden="true"></div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar" aria-label="Navigation principale">
+    <div class="container">
+      <a href="#accueil" class="logo" aria-label="BâtiPro, accueil">Bâti<span>Pro</span></a>
+      <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#accueil" aria-label="Accueil">Accueil</a></li>
+        <li><a href="#apropos" aria-label="À propos">À propos</a></li>
+        <li><a href="#services" aria-label="Services">Services</a></li>
+        <li><a href="#realisations" aria-label="Réalisations">Réalisations</a></li>
+        <li><a href="#contact" aria-label="Contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="accueil" class="hero">
+    <div class="hero-bg">
+      <img
+        src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1920&q=80"
+        alt="Chantier de construction avec grue au coucher du soleil"
+        width="1920" height="1280" fetchpriority="high"
+      >
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1>Nous construisons vos projets</h1>
+      <p>De la conception à la livraison, un savoir-faire éprouvé depuis 2005.</p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-primary">Demander un devis</a>
+        <a href="#realisations" class="btn btn-outline">Voir nos réalisations</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- À PROPOS -->
+  <section id="apropos" class="section about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-img reveal">
+          <img
+            src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80"
+            alt="Équipe de construction BâtiPro sur un chantier"
+            width="800" height="600" loading="lazy"
+          >
+        </div>
+        <div class="about-content reveal">
+          <h2>Un savoir-faire familial depuis 2005</h2>
+          <p>
+            Fondée à Bordeaux par la famille Martin, BâtiPro est devenue en 20 ans une référence 
+            régionale de la construction et de la rénovation. Notre approche : allier tradition 
+            artisanale et techniques modernes pour livrer des bâtiments durables et performants.
+          </p>
+          <ul class="about-list">
+            <li>Certification RGE Qualibat depuis 2010</li>
+            <li>Garantie décennale sur tous nos chantiers</li>
+            <li>Équipe de 15 experts pluridisciplinaires</li>
+            <li>Engagement éco-responsable et circuits courts</li>
+          </ul>
+          <a href="#contact" class="btn btn-primary">Travaillons ensemble</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">Nos services</h2>
+        <p class="section-sub">Un accompagnement complet à chaque étape</p>
+      </div>
+      <div class="services-grid">
+        <article class="service-card reveal">
+          <div class="service-img">
+            <img
+              src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80"
+              alt="Ouvrier sur un chantier de construction neuve"
+              width="600" height="450" loading="lazy"
+            >
+          </div>
+          <div class="service-body">
+            <h3>Construction neuve</h3>
+            <p>Maisons individuelles, bâtiments professionnels et extensions. Des fondations solides pour votre projet.</p>
+          </div>
+        </article>
+        <article class="service-card reveal">
+          <div class="service-img">
+            <img
+              src="https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?w=600&q=80"
+              alt="Travaux de rénovation intérieure d'un bâtiment"
+              width="600" height="450" loading="lazy"
+            >
+          </div>
+          <div class="service-body">
+            <h3>Rénovation</h3>
+            <p>Remise à neuf, restructuration, mise aux normes. Nous redonnons vie à votre patrimoine.</p>
+          </div>
+        </article>
+        <article class="service-card reveal">
+          <div class="service-img">
+            <img
+              src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80"
+              alt="Extension moderne en bois d'une maison"
+              width="600" height="450" loading="lazy"
+            >
+          </div>
+          <div class="service-body">
+            <h3>Extension & aménagement</h3>
+            <p>Agrandissement, surélévation, aménagement intérieur. Des espaces pensés pour votre confort.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESSUS -->
+  <section id="processus" class="section process">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">Notre méthode</h2>
+        <p class="section-sub">4 étapes clés pour un projet maîtrisé de A à Z</p>
+      </div>
+      <div class="process-grid">
+        <div class="process-step reveal">
+          <h3>Écoute & diagnostic</h3>
+          <p>Nous analysons votre besoin, votre terrain et votre budget lors d'une visite technique gratuite.</p>
+        </div>
+        <div class="process-step reveal">
+          <h3>Conception & devis</h3>
+          <p>Nos architectes et ingénieurs conçoivent les plans et vous remettent un devis détaillé sous 10 jours.</p>
+        </div>
+        <div class="process-step reveal">
+          <h3>Réalisation des travaux</h3>
+          <p>Un chef de chantier dédié pilote les équipes, respecte les délais et vous informe chaque semaine.</p>
+        </div>
+        <div class="process-step reveal">
+          <h3>Livraison & garantie</h3>
+          <p>Réception des travaux, remise des garanties et suivi post-livraison pendant 10 ans.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RÉALISATIONS CARROUSEL -->
+  <section id="realisations" class="realisations">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">Nos réalisations</h2>
+        <p class="section-sub">Une sélection de chantiers récents</p>
+      </div>
+    </div>
+    <div class="container">
+      <div class="carousel-wrapper reveal">
+        <div class="carousel-viewport">
+          <div class="carousel-track" id="carouselTrack">
+            <div class="carousel-slide">
+              <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80"
+                   alt="Villa contemporaine avec piscine" width="1200" height="675" loading="lazy">
+              <div class="carousel-overlay">
+                <span class="tag">Construction neuve</span>
+                <h3>Villa contemporaine</h3>
+                <p>Bordeaux · 2024 · 240 m²</p>
+              </div>
+            </div>
+            <div class="carousel-slide">
+              <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&q=80"
+                   alt="Intérieur moderne de bureaux rénovés" width="1200" height="675" loading="lazy">
+              <div class="carousel-overlay">
+                <span class="tag">Rénovation</span>
+                <h3>Rénovation de bureaux</h3>
+                <p>Lyon · 2024 · 850 m²</p>
+              </div>
+            </div>
+            <div class="carousel-slide">
+              <img src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1200&q=80"
+                   alt="Maison moderne avec grande baie vitrée" width="1200" height="675" loading="lazy">
+              <div class="carousel-overlay">
+                <span class="tag">Extension bois</span>
+                <h3>Extension bois</h3>
+                <p>Nantes · 2023 · 65 m²</p>
+              </div>
+            </div>
+            <div class="carousel-slide">
+              <img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200&q=80"
+                   alt="Maison de ville rénovée avec façade en pierre" width="1200" height="675" loading="lazy">
+              <div class="carousel-overlay">
+                <span class="tag">Patrimoine</span>
+                <h3>Réhabilitation patrimoine</h3>
+                <p>Toulouse · 2023 · 320 m²</p>
+              </div>
+            </div>
+            <div class="carousel-slide">
+              <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80"
+                   alt="Maison contemporaine avec jardin paysager" width="1200" height="675" loading="lazy">
+              <div class="carousel-overlay">
+                <span class="tag">Construction neuve</span>
+                <h3>Maison familiale</h3>
+                <p>Rennes · 2023 · 180 m²</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-controls">
+          <button class="carousel-btn" id="prevBtn" aria-label="Slide précédent">‹</button>
+          <div class="carousel-dots" id="carouselDots"></div>
+          <button class="carousel-btn" id="nextBtn" aria-label="Slide suivant">›</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHIFFRES CLÉS -->
+  <section class="stats">
+    <div class="container">
+      <div class="stats-grid reveal">
+        <div class="stat-item">
+          <h3 data-count="200" data-suffix="+">0</h3>
+          <p>Projets livrés</p>
+        </div>
+        <div class="stat-item">
+          <h3 data-count="20" data-suffix="">0</h3>
+          <p>Ans d'expérience</p>
+        </div>
+        <div class="stat-item">
+          <h3 data-count="98" data-suffix="%">0</h3>
+          <p>Clients satisfaits</p>
+        </div>
+        <div class="stat-item">
+          <h3 data-count="15" data-suffix="">0</h3>
+          <p>Experts</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TÉMOIGNAGES -->
+  <section id="temoignages" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">Ils nous font confiance</h2>
+        <p class="section-sub">La satisfaction de nos clients, notre meilleure publicité</p>
+      </div>
+      <div class="testimonials-grid">
+        <article class="testimonial-card reveal">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">
+            "BâtiPro a construit notre maison en 8 mois, dans les délais et le budget annoncés. 
+            Une équipe sérieuse, à l'écoute, et un chantier toujours propre. Je recommande vivement."
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">SL</div>
+            <div>
+              <strong>Sophie Laurent</strong>
+              <span>Particulier · Bordeaux</span>
+            </div>
+          </div>
+        </article>
+        <article class="testimonial-card reveal">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">
+            "Nous avons confié la rénovation complète de nos bureaux à BâtiPro. Résultat impeccable, 
+            coordination parfaite des corps d'état et un interlocuteur unique très réactif."
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">MD</div>
+            <div>
+              <strong>Marc Dubois</strong>
+              <span>Directeur · Lyon</span>
+            </div>
+          </div>
+        </article>
+        <article class="testimonial-card reveal">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">
+            "Une extension bois livrée en avance et d'une qualité rare. Le chef de chantier nous 
+            informait chaque semaine. Un vrai partenariat de confiance."
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">CM</div>
+            <div>
+              <strong>Claire Moreau</strong>
+              <span>Particulier · Nantes</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="section faq">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">Questions fréquentes</h2>
+        <p class="section-sub">Tout ce que vous devez savoir avant de démarrer</p>
+      </div>
+      <div class="faq-list reveal">
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            Quel est le délai moyen pour un projet de construction ?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Pour une maison individuelle, comptez entre 10 et 14 mois entre la signature du devis et la livraison, selon la complexité du projet et les démarches administratives. Une extension ou une rénovation peut prendre de 2 à 6 mois.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            Proposez-vous un accompagnement administratif ?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Oui, nous prenons en charge les demandes de permis de construire, les déclarations préalables et les autorisations nécessaires. Notre équipe travaille avec des architectes et bureaux d'études partenaires pour garantir la conformité de votre projet.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            Quelles garanties offrez-vous sur vos chantiers ?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Tous nos chantiers bénéficient de la garantie décennale, de la garantie biennale et de la garantie de parfait achèvement. Nous sommes certifiés RGE Qualibat, ce qui vous permet aussi d'accéder aux aides à la rénovation énergétique.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            Le devis est-il gratuit et sans engagement ?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Absolument. La visite technique, l'étude de votre projet et le devis détaillé sont entièrement gratuits et sans engagement. Nous vous remettons un document clair, poste par poste, sous 10 jours ouvrés.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            Intervenez-vous en dehors de la Gironde ?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Nous intervenons principalement en Nouvelle-Aquitaine (Gironde, Dordogne, Lot-et-Garonne, Landes). Pour les projets d'envergure, nous étudions toute demande dans un rayon de 250 km autour de Bordeaux.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">Parlons de votre projet</h2>
+        <p class="section-sub">Notre équipe vous répond sous 24h ouvrées</p>
+      </div>
+      <div class="contact-grid">
+        <form class="contact-form reveal" aria-label="Formulaire de contact">
+          <h3>Demande de devis</h3>
+          <div class="form-group">
+            <label for="name">Nom complet</label>
+            <input type="text" id="name" name="name" placeholder="Jean Dupont" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="jean@exemple.fr" required>
+          </div>
+          <div class="form-group">
+            <label for="phone">Téléphone</label>
+            <input type="tel" id="phone" name="phone" placeholder="06 00 00 00 00">
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="Décrivez votre projet en quelques lignes…"></textarea>
+          </div>
+          <button type="submit" class="btn-submit">Envoyer la demande</button>
+        </form>
+        <div class="contact-info reveal">
+          <h3>Coordonnées</h3>
+          <div class="contact-detail">
+            <div class="icon" aria-hidden="true">📍</div>
+            <div>
+              <div class="label">Adresse</div>
+              <div class="value">12 rue des Bâtisseurs<br>33000 Bordeaux</div>
+            </div>
+          </div>
+          <div class="contact-detail">
+            <div class="icon" aria-hidden="true">📞</div>
+            <div>
+              <div class="label">Téléphone</div>
+              <div class="value">05 56 00 00 00</div>
+            </div>
+          </div>
+          <div class="contact-detail">
+            <div class="icon" aria-hidden="true">✉️</div>
+            <div>
+              <div class="label">Email</div>
+              <div class="value">contact@batipro.fr</div>
+            </div>
+          </div>
+          <div class="contact-detail">
+            <div class="icon" aria-hidden="true">🕒</div>
+            <div>
+              <div class="label">Horaires</div>
+              <div class="value">Lun–Ven · 8h00 – 18h30</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="logo">Bâti<span style="color:var(--accent);">Pro</span></div>
+      <p class="footer-tagline">Construire solide, rénover durable.</p>
+      <ul class="footer-links">
+        <li><a href="#" aria-label="LinkedIn">LinkedIn</a></li>
+        <li><a href="#" aria-label="Instagram">Instagram</a></li>
+        <li><a href="#" aria-label="Facebook">Facebook</a></li>
+      </ul>
+      <p class="footer-copy">© 2026 BâtiPro — Tous droits réservés.</p>
+    </div>
+  </footer>
+
+  <script>
+    /* ============================================================
+       1. NAVBAR STICKY + BURGER MOBILE
+       ============================================================ */
+    (function() {
+      const navbar = document.getElementById('navbar');
+      const burger = document.getElementById('burger');
+      const navLinks = document.getElementById('navLinks');
+
+      window.addEventListener('scroll', () => {
+        navbar.classList.toggle('is-stuck', window.scrollY > 20);
+      }, { passive: true });
+
+      burger.addEventListener('click', () => {
+        const isOpen = navLinks.classList.toggle('open');
+        burger.classList.toggle('active', isOpen);
+        burger.setAttribute('aria-expanded', isOpen);
+      });
+
+      // Fermer le menu au clic sur un lien
+      navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          navLinks.classList.remove('open');
+          burger.classList.remove('active');
+          burger.setAttribute('aria-expanded', 'false');
+        });
+      });
+    })();
+
+    /* ============================================================
+       2. BARRE DE PROGRESSION
+       ============================================================ */
+    (function() {
+      const bar = document.getElementById('progressBar');
+      window.addEventListener('scroll', () => {
+        const h = document.documentElement;
+        const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
+        bar.style.transform = `scaleX(${scrolled})`;
+      }, { passive: true });
+    })();
+
+    /* ============================================================
+       3. SCROLL REVEAL (IntersectionObserver)
+       ============================================================ */
+    (function() {
+      const reveals = document.querySelectorAll('.reveal');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, i) => {
+          if (entry.isIntersecting) {
+            // Stagger pour les cartes services / process
+            const parent = entry.target.parentElement;
+            const siblings = parent ? Array.from(parent.querySelectorAll('.reveal')) : [];
+            const index = siblings.indexOf(entry.target);
+            const delay = index >= 0 ? index * 120 : 0;
+
+            setTimeout(() => {
+              entry.target.classList.add('visible');
+            }, delay);
+
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+
+      reveals.forEach(el => observer.observe(el));
+    })();
+
+    /* ============================================================
+       4. CARROUSEL AUTOMATIQUE RÉALISATIONS
+       ============================================================ */
+    (function() {
+      const track = document.getElementById('carouselTrack');
+      const slides = track.querySelectorAll('.carousel-slide');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const dotsContainer = document.getElementById('carouselDots');
+
+      let currentIndex = 0;
+      let autoplayInterval = null;
+      const AUTOPLAY_DELAY = 4500;
+      const totalSlides = slides.length;
+
+      // Créer les dots
+      slides.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.classList.add('carousel-dot');
+        dot.setAttribute('aria-label', `Aller au slide ${i + 1}`);
+        if (i === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => goToSlide(i));
+        dotsContainer.appendChild(dot);
+      });
+
+      const dots = dotsContainer.querySelectorAll('.carousel-dot');
+
+      function updateDots() {
+        dots.forEach((dot, i) => {
+          dot.classList.toggle('active', i === currentIndex);
+        });
+      }
+
+      function goToSlide(index) {
+        currentIndex = (index + totalSlides) % totalSlides;
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+        updateDots();
+      }
+
+      function nextSlide() { goToSlide(currentIndex + 1); }
+      function prevSlide() { goToSlide(currentIndex - 1); }
+
+      function startAutoplay() {
+        stopAutoplay();
+        autoplayInterval = setInterval(nextSlide, AUTOPLAY_DELAY);
+      }
+
+      function stopAutoplay() {
+        if (autoplayInterval) clearInterval(autoplayInterval);
+        autoplayInterval = null;
+      }
+
+      nextBtn.addEventListener('click', () => { nextSlide(); startAutoplay(); });
+      prevBtn.addEventListener('click', () => { prevSlide(); startAutoplay(); });
+
+      // Pause au survol
+      const wrapper = track.closest('.carousel-wrapper');
+      wrapper.addEventListener('mouseenter', stopAutoplay);
+      wrapper.addEventListener('mouseleave', startAutoplay);
+
+      // Pause quand l'onglet n'est pas visible
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) stopAutoplay();
+        else startAutoplay();
+      });
+
+      // Swipe tactile
+      let touchStartX = 0;
+      let touchEndX = 0;
+      track.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        stopAutoplay();
+      }, { passive: true });
+
+      track.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+          if (diff > 0) nextSlide();
+          else prevSlide();
+        }
+        startAutoplay();
+      }, { passive: true });
+
+      // Navigation clavier
+      wrapper.setAttribute('tabindex', '0');
+      wrapper.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') { nextSlide(); startAutoplay(); }
+        if (e.key === 'ArrowLeft') { prevSlide(); startAutoplay(); }
+      });
+
+      startAutoplay();
+    })();
+
+    /* ============================================================
+       5. COMPTEURS ANIMÉS (CHIFFRES CLÉS)
+       ============================================================ */
+    (function() {
+      const counters = document.querySelectorAll('[data-count]');
+      let animated = false;
+
+      function animateCounters() {
+        counters.forEach(counter => {
+          const target = parseInt(counter.dataset.count, 10);
+          const suffix = counter.dataset.suffix || '';
+          const duration = 1800;
+          const startTime = performance.now();
+
+          function tick(now) {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            // easeOutExpo
+            const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+            const value = Math.floor(eased * target);
+            counter.textContent = value + suffix;
+            if (progress < 1) requestAnimationFrame(tick);
+            else counter.textContent = target + suffix;
+          }
+          requestAnimationFrame(tick);
+        });
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !animated) {
+            animated = true;
+            animateCounters();
+            observer.disconnect();
+          }
+        });
+      }, { threshold: 0.4 });
+
+      const statsSection = document.querySelector('.stats');
+      if (statsSection) observer.observe(statsSection);
+    })();
+
+    /* ============================================================
+       6. FAQ ACCORDÉON
+       ============================================================ */
+    (function() {
+      const faqItems = document.querySelectorAll('.faq-item');
+
+      faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        question.addEventListener('click', () => {
+          const isOpen = item.classList.contains('open');
+
+          // Fermer tous les autres
+          faqItems.forEach(other => {
+            other.classList.remove('open');
+            other.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+          });
+
+          // Ouvrir celui cliqué si fermé
+          if (!isOpen) {
+            item.classList.add('open');
+            question.setAttribute('aria-expanded', 'true');
+          }
+        });
+      });
+    })();
+
+    /* ============================================================
+       7. RESPONSIVE JS — AJUSTEMENTS DYNAMIQUES
+       ============================================================ */
+    (function() {
+      const carousel = document.querySelector('.carousel-wrapper');
+      const track = document.getElementById('carouselTrack');
+
+      function handleResponsive() {
+        const w = window.innerWidth;
+
+        // Ajuster la hauteur du hero sur très petits écrans
+        const hero = document.querySelector('.hero');
+        if (hero) {
+          if (w < 480) {
+            hero.style.minHeight = '85vh';
+          } else {
+            hero.style.minHeight = '100vh';
+          }
+        }
+
+        // Réinitialiser la position du carrousel sur changement de breakpoint
+        if (track) {
+          const currentTransform = track.style.transform;
+          // Force un reflow propre
+          track.style.transition = 'none';
+          track.style.transform = currentTransform || 'translateX(0)';
+          requestAnimationFrame(() => {
+            track.style.transition = '';
+          });
+        }
+
+        // Ajuster le nombre de slides visibles (si on voulait en afficher plusieurs)
+        // Ici on garde 100% par slide, donc pas besoin
+      }
+
+      // Debounce
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(handleResponsive, 150);
+      });
+
+      handleResponsive();
+    })();
+
+    /* ============================================================
+       8. SMOOTH SCROLL POUR LES ANCRES (fallback si CSS non supporté)
+       ============================================================ */
+    (function() {
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          const targetId = this.getAttribute('href');
+          if (targetId === '#') return;
+          const target = document.querySelector(targetId);
+          if (target) {
+            e.preventDefault();
+            const navHeight = document.getElementById('navbar').offsetHeight;
+            const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
+            window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+          }
+        });
+      });
+    })();
+
+  </script>
+
+</body>
+</html>
